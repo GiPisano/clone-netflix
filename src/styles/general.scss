@@ -1,0 +1,16 @@
+@use './partials/variables.scss' as *;
+@use './partials/mixins.scss' as *;
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+li{
+    list-style: none;
+}
+
+:root{
+    --slider-padding: 5rem;
+}
