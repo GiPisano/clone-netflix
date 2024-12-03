@@ -36,15 +36,21 @@ export default {
 <template>
   <div class="search">
     <div v-for="movie in store.movies" :key="movie.id">
-      <div class="container-img" v-if="movie.poster_path !== null">
-        <img :src="pathImg(movie)" alt="" />
-      </div>
+      <router-link :to="{ name: 'MovieDetails', params: { id: movie.id } }">
+        <div class="container-img" v-if="movie.poster_path !== null">
+          <img :src="pathImg(movie)" alt="" />
+        </div>
+      </router-link>
     </div>
 
     <div v-for="tvSerie in store.tvSeries" :key="tvSerie.id">
-      <div class="container-img" v-if="tvSerie.poster_path !== null">
-        <img :src="pathImg(tvSerie)" alt="" />
-      </div>
+      <router-link
+        :to="{ name: 'TvSeriesDetails', params: { id: tvSerie.id } }"
+      >
+        <div class="container-img" v-if="tvSerie.poster_path !== null">
+          <img :src="pathImg(tvSerie)" alt="" />
+        </div>
+      </router-link>
     </div>
   </div>
   <div v-show="store.movies <= 0 && store.tvSeries <= 0">

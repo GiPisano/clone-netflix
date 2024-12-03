@@ -24,12 +24,14 @@ export default {
         });
         store[storeProperty] = response.data.results.map((item) => {
           return {
+            id: item.id,
             title: item.title || item.name,
             original_title: item.original_title || item.original_name,
             language: item.original_language,
             vote: Math.floor(item.vote_average / 2) + 1,
             poster_path: item.poster_path,
             overview: item.overview,
+            media_type: endpoint.includes("movie") ? "movie" : "tv", // Aggiungi media_type
           };
         });
       } catch (error) {
@@ -56,7 +58,7 @@ export default {
 <template>
   <div class="container">
     <app-header @search="performSearch"></app-header>
-    <app-main></app-main>
+    <router-view></router-view>
   </div>
 </template>
 

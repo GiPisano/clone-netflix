@@ -46,9 +46,19 @@ export default {
           <i class="fa-solid fa-chevron-left"></i>
         </div>
         <div v-for="item in items" :key="item.id">
-          <div class="container-img" v-if="item.poster_path !== null">
-            <img :src="imgPathFunc(item)" alt="" />
-          </div>
+          <router-link
+            :to="{
+              name:
+                item.media_type === 'movie'
+                  ? 'MovieDetails'
+                  : 'TvSeriesDetails',
+              params: { id: item.id, media_type: item.media_type },
+            }"
+          >
+            <div class="container-img" v-if="item.poster_path !== null">
+              <img :src="imgPathFunc(item)" alt="" />
+            </div>
+          </router-link>
         </div>
 
         <div class="handle right-handle" @click="scrollRight">

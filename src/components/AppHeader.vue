@@ -12,7 +12,9 @@ export default {
 
 <template>
   <div class="header">
-    <h2>Boolflix</h2>
+    <RouterLink to="/">
+      <h2>Boolflix</h2>
+    </RouterLink>
 
     <div>
       <input
