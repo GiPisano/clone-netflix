@@ -52,7 +52,7 @@ export default {
                 item.media_type === 'movie'
                   ? 'MovieDetails'
                   : 'TvSeriesDetails',
-              params: { id: item.id, media_type: item.media_type },
+              params: { id: item.id },
             }"
           >
             <div class="container-img" v-if="item.poster_path !== null">

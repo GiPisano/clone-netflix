@@ -5,6 +5,8 @@ export default {
   data() {
     return {
       detail: {},
+      seasons: [], // Dettagli delle stagioni
+      trailerKey: null, // Per il trailer
     };
   },
   methods: {
@@ -17,6 +19,7 @@ export default {
           `${store.api.apiUri}/tv/${id}?api_key=${store.api.key}`
         );
         const data = await response.json();
+
         this.detail = {
           title: data.name,
           language: data.original_language,
@@ -25,8 +28,48 @@ export default {
           overview: data.overview,
           release_date: data.first_air_date,
         };
+
+        this.seasons = data.seasons;
+
+        // Trailer
+        const videoResponse = await fetch(
+          `${store.api.apiUri}/tv/${id}/videos?api_key=${store.api.key}`
+        );
+        const videoData = await videoResponse.json();
+        const trailer = videoData.results.find(
+          (video) => video.type === "Trailer" && video.site === "YouTube"
+        );
+        this.trailerKey = trailer ? trailer.key : null;
       } catch (error) {
-        console.error("Error fetching TV series details:", error);
+        console.error("Error fetching TV series details or videos:", error);
+      }
+    },
+    async fetchSeasonDetails(id, seasonNumber) {
+      try {
+        const response = await fetch(
+          `${store.api.apiUri}/tv/${id}/season/${seasonNumber}?api_key=${store.api.key}`
+        );
+        const data = await response.json();
+        return data.episodes.map((episode) => ({
+          id: episode.id,
+          name: episode.name,
+          overview: episode.overview,
+          air_date: episode.air_date,
+          vote: Math.floor(episode.vote_average / 2) + 1,
+        }));
+      } catch (error) {
+        console.error("Error fetching season details:", error);
+        return [];
+      }
+    },
+    async toggleSeason(season) {
+      if (!season.episodes) {
+        season.episodes = await this.fetchSeasonDetails(
+          this.$route.params.id,
+          season.season_number
+        );
+      } else {
+        season.episodes = null; // Nasconde gli episodi
       }
     },
     goBack() {
@@ -44,17 +87,28 @@ export default {
   <div class="detail-container">
     <button @click="goBack" class="back-button">← Back</button>
 
+    <!-- Background / Video Section -->
     <div class="background">
-      <img
-        :src="pathImg(detail)"
-        alt="TV Series poster"
-        class="background-img"
-      />
+      <template v-if="trailerKey">
+        <iframe
+          class="trailer"
+          :src="`https://www.youtube.com/embed/${trailerKey}?autoplay=1&controls=0&loop=1&playlist=${trailerKey}`"
+          frameborder="0"
+          allow="autoplay; fullscreen"
+          allowfullscreen
+        ></iframe>
+      </template>
+      <template v-else>
+        <img
+          :src="pathImg(detail)"
+          alt="TV Series poster"
+          class="background-img"
+        />
+      </template>
     </div>
+
+    <!-- Content Section -->
     <div class="content">
-      <div class="poster">
-        <img :src="pathImg(detail)" alt="TV Series poster" class="poster-img" />
-      </div>
       <div class="info">
         <h1 class="title">{{ detail.title }}</h1>
         <p class="overview">{{ detail.overview }}</p>
@@ -66,12 +120,35 @@ export default {
           <span class="release-date">{{ detail.release_date }}</span>
         </div>
       </div>
+
+      <!-- Seasons Section -->
+      <div class="seasons">
+        <h2 class="section-title">Seasons</h2>
+        <div v-for="season in seasons" :key="season.id" class="season">
+          <div class="season-header" @click="toggleSeason(season)">
+            <h3>{{ season.name }}</h3>
+            <span>{{ season.episodes ? "▼" : "▶" }}</span>
+          </div>
+          <ul v-if="season.episodes" class="episodes">
+            <li
+              v-for="episode in season.episodes"
+              :key="episode.id"
+              class="episode"
+            >
+              <h4>{{ episode.name }}</h4>
+              <p>{{ episode.overview }}</p>
+              <small>
+                Date: {{ episode.air_date }} | Rating: {{ episode.vote }} / 5
+              </small>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-/* Gli stili sono invariati */
 .detail-container {
   background-color: #111;
   color: #fff;
@@ -84,26 +161,28 @@ export default {
   position: relative;
   height: 50vh;
   width: 100%;
+  overflow: hidden;
 }
 
 .background-img {
   object-fit: cover;
   width: 100%;
   height: 100%;
-  filter: blur(8px);
+}
+
+.trailer {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   position: absolute;
   top: 0;
   left: 0;
-  z-index: -1;
+  z-index: 0;
 }
 
 .content {
-  display: flex;
-  flex-direction: row;
   padding: 2rem;
   position: relative;
-  z-index: 1;
-  flex-wrap: wrap;
 }
 
 .poster {
@@ -161,7 +240,6 @@ export default {
   color: #b3b3b3;
 }
 
-/* Pulsante indietro */
 .back-button {
   background-color: transparent;
   color: #fff;
@@ -177,24 +255,64 @@ export default {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Stile mobile responsive */
-@media (max-width: 768px) {
-  .content {
-    flex-direction: column;
-    padding: 1rem;
-  }
+.seasons {
+  margin-top: 2rem;
+}
 
-  .poster-img {
-    width: 150px;
-    height: 225px;
-  }
+.section-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
 
-  .title {
-    font-size: 2rem;
-  }
+.season {
+  border: 1px solid #444;
+  margin-bottom: 1rem;
+  border-radius: 5px;
+  overflow: hidden;
+}
 
-  .overview {
-    font-size: 1rem;
-  }
+.season-header {
+  background-color: #222;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  color: #fff;
+}
+
+.season-header:hover {
+  background-color: #333;
+}
+
+.episodes {
+  padding: 1rem;
+  background-color: #111;
+}
+
+.episode {
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  border-bottom: 1px solid #444;
+}
+
+.episode:last-child {
+  border-bottom: none;
+}
+
+.episode h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+}
+
+.episode p {
+  font-size: 1rem;
+  color: #b3b3b3;
+}
+
+.episode small {
+  font-size: 0.9rem;
+  color: #888;
 }
 </style>

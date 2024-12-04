@@ -5,6 +5,7 @@ export default {
   data() {
     return {
       detail: {},
+      trailerKey: null,
     };
   },
   methods: {
@@ -25,8 +26,17 @@ export default {
           overview: data.overview,
           release_date: data.release_date,
         };
+
+        const videoResponse = await fetch(
+          `${store.api.apiUri}/movie/${id}/videos?api_key=${store.api.key}`
+        );
+        const videoData = await videoResponse.json();
+        const trailer = videoData.results.find(
+          (video) => video.type === "Trailer" && video.site === "YouTube"
+        );
+        this.trailerKey = trailer ? trailer.key : null;
       } catch (error) {
-        console.error("Error fetching movie details:", error);
+        console.error("Error fetching movie details or videos:", error);
       }
     },
     goBack() {
@@ -44,9 +54,23 @@ export default {
   <div class="detail-container">
     <button @click="goBack" class="back-button">← Back</button>
 
+    <!-- Background / Video Section -->
     <div class="background">
-      <img :src="pathImg(detail)" alt="Movie poster" class="background-img" />
+      <template v-if="trailerKey">
+        <iframe
+          class="trailer"
+          :src="`https://www.youtube.com/embed/${trailerKey}?autoplay=1&controls=0&loop=1&playlist=${trailerKey}`"
+          frameborder="0"
+          allow="autoplay; fullscreen"
+          allowfullscreen
+        ></iframe>
+      </template>
+      <template v-else>
+        <img :src="pathImg(detail)" alt="Movie poster" class="background-img" />
+      </template>
     </div>
+
+    <!-- Content Section -->
     <div class="content">
       <div class="poster">
         <img :src="pathImg(detail)" alt="Movie poster" class="poster-img" />
@@ -67,7 +91,6 @@ export default {
 </template>
 
 <style scoped lang="scss">
-/* Gli stili sono invariati */
 .detail-container {
   background-color: #111;
   color: #fff;
@@ -80,17 +103,23 @@ export default {
   position: relative;
   height: 50vh;
   width: 100%;
+  overflow: hidden;
 }
 
 .background-img {
   object-fit: cover;
   width: 100%;
   height: 100%;
-  filter: blur(8px);
+}
+
+.trailer {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   position: absolute;
   top: 0;
   left: 0;
-  z-index: -1;
+  z-index: 0;
 }
 
 .content {
@@ -157,7 +186,6 @@ export default {
   color: #b3b3b3;
 }
 
-/* Pulsante indietro */
 .back-button {
   background-color: transparent;
   color: #fff;
@@ -171,26 +199,5 @@ export default {
 
 .back-button:hover {
   background-color: rgba(255, 255, 255, 0.1);
-}
-
-/* Stile mobile responsive */
-@media (max-width: 768px) {
-  .content {
-    flex-direction: column;
-    padding: 1rem;
-  }
-
-  .poster-img {
-    width: 150px;
-    height: 225px;
-  }
-
-  .title {
-    font-size: 2rem;
-  }
-
-  .overview {
-    font-size: 1rem;
-  }
 }
 </style>

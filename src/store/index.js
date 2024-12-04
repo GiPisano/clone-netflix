@@ -2,9 +2,9 @@ import { reactive } from "vue";
 
 export const store = reactive({
   api: {
-    apiUri: "https://api.themoviedb.org/3",
-    key: "e5070052f9ec6dfe5bcf6c3d61c62c05",
-    imgPhat: "https://image.tmdb.org/t/p/w342/",
+    apiUri: import.meta.env.VITE_API_URI,
+    key: import.meta.env.VITE_API_KEY,
+    imgPhat: import.meta.env.VITE_IMAGE_PATH,
   },
 
   movies: [],
