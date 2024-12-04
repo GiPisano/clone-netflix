@@ -40,8 +40,20 @@ export default {
     },
 
     performSearch(inputValue) {
-      this.fetchData(`/search/movie?query=${inputValue}`, "movies");
-      this.fetchData(`/search/tv?query=${inputValue}`, "tvSeries");
+      if (!inputValue) {
+        // Ripristina i dati di default
+        this.fetchData("/movie/popular", "trendingMovies");
+        this.fetchData("/tv/popular", "trendingTv");
+        this.fetchData("/movie/top_rated", "topRatedMovies");
+        this.fetchData("/movie/upcoming", "upcomingMovie");
+        this.fetchData("/tv/on_the_air", "tvOnTheAir");
+        store.movies = []; // Pulisci i risultati di ricerca
+        store.tvSeries = [];
+      } else {
+        // Esegui la ricerca
+        this.fetchData(`/search/movie?query=${inputValue}`, "movies");
+        this.fetchData(`/search/tv?query=${inputValue}`, "tvSeries");
+      }
     },
   },
 
@@ -51,6 +63,10 @@ export default {
     this.fetchData("/movie/top_rated", "topRatedMovies");
     this.fetchData("/movie/upcoming", "upcomingMovie");
     this.fetchData("/tv/on_the_air", "tvOnTheAir");
+  },
+  performSearch(inputValue) {
+    this.fetchData(`/search/movie?query=${inputValue}`, "movies");
+    this.fetchData(`/search/tv?query=${inputValue}`, "tvSeries");
   },
 };
 </script>
@@ -72,5 +88,7 @@ export default {
 }
 .main-content {
   padding-top: 65px;
+  background-color: #111;
+  min-height: calc(100vh);
 }
 </style>

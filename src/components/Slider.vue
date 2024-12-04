@@ -39,7 +39,7 @@ export default {
 
 <template>
   <div v-show="items.length > 0">
-    <h2>{{ title }}</h2>
+    <h2 class="title">{{ title }}</h2>
     <div class="container">
       <div class="slider" :ref="sliderRef">
         <div class="handle left-handle" @click="scrollLeft">
@@ -74,6 +74,10 @@ export default {
   display: flex;
   justify-content: center;
   position: relative;
+}
+
+.title {
+  color: white;
 }
 
 .slider {

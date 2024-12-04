@@ -53,7 +53,7 @@ export default {
       </router-link>
     </div>
   </div>
-  <div v-show="store.movies <= 0 && store.tvSeries <= 0">
+  <div v-show="store.movies.length === 0 && store.tvSeries.length === 0">
     <Slider
       v-if="store.trendingMovies.length > 0"
       title="Trending Movies"
