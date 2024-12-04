@@ -38,8 +38,8 @@ export default {
   background-color: black;
   color: white;
   height: 65px;
-  // position: fixed;
-  // z-index: 1;
+  position: fixed;
+  z-index: 100;
 
   h2 {
     color: red;

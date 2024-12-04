@@ -58,7 +58,9 @@ export default {
 <template>
   <div class="container">
     <app-header @search="performSearch"></app-header>
-    <router-view></router-view>
+    <div class="main-content">
+      <router-view></router-view>
+    </div>
   </div>
 </template>
 
@@ -67,5 +69,8 @@ export default {
 
 .container {
   overflow: hidden;
+}
+.main-content {
+  padding-top: 65px;
 }
 </style>

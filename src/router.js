@@ -12,14 +12,14 @@ const routes = [
   {
     path: "/movie/:id",
     name: "MovieDetails",
-    component: () => import("./components/MovieDetails.vue"),
-    props: (route) => ({ id: route.params.id, media_type: "movie" }), // Aggiungi media_type
+    component: MovieDetails,
+    props: true,
   },
   {
     path: "/tv/:id",
     name: "TvSeriesDetails",
-    component: () => import("./components/TvSeriesDetails.vue"),
-    props: (route) => ({ id: route.params.id, media_type: "tv" }), // Aggiungi media_type
+    component: TvSeriesDetails,
+    props: true,
   },
 ];
 
