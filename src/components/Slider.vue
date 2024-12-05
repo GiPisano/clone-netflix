@@ -78,6 +78,7 @@ export default {
 
 .title {
   color: white;
+  padding: 10px 20px;
 }
 
 .slider::-webkit-scrollbar {
