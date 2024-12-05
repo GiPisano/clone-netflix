@@ -87,7 +87,8 @@ export default {
   overflow: hidden;
 }
 .main-content {
-  padding-top: 65px;
+  padding-top: 85px;
+  padding-bottom: 20px;
   background-color: #111;
   min-height: calc(100vh);
 }

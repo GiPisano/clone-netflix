@@ -53,7 +53,11 @@ export default {
       </router-link>
     </div>
   </div>
-  <div v-show="store.movies.length === 0 && store.tvSeries.length === 0">
+
+  <div
+    v-show="store.movies.length === 0 && store.tvSeries.length === 0"
+    class="sliders"
+  >
     <Slider
       v-if="store.trendingMovies.length > 0"
       title="Trending Movies"
@@ -97,6 +101,11 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+.sliders {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
 .search {
   display: flex;
   justify-content: center;
