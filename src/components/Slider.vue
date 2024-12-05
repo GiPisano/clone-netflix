@@ -80,6 +80,10 @@ export default {
   color: white;
 }
 
+.slider::-webkit-scrollbar {
+  display: none;
+}
+
 .slider {
   display: flex;
   flex-grow: 1;
@@ -87,6 +91,8 @@ export default {
   overflow-x: auto;
   overflow-y: hidden;
   width: calc(100% - 6rem);
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .handle {
